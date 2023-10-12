@@ -1,0 +1,103 @@
+clear
+** Define diretorio padrão
+global directory "C:\Users\rafae\OneDrive\Documentos\MESTRADO\DISSERTACAO\Pesquisa IPPUC"
+cd "$directory"
+
+**Importando os microdados da Pesquisa OD
+
+import delimited "$directory\deslocamento_arq._.csv", delimiter(";") 
+
+**Apagando informações de renda não informada
+**drop if renda=="NÃO INFORMADA"
+**drop if renda=="SEM INFORMAÇÃO"
+gen renda2 = real(renda)
+
+**Gerando gráfico
+graph7 tempo renda2
+
+**Separando por Faixa de Renda
+gen faixarenda=1
+replace faixarenda=2 if renda2>937
+replace faixarenda=3 if renda2>2811
+replace faixarenda=4 if renda2>5622
+replace faixarenda=5 if renda2>8433
+replace faixarenda=6 if renda2==.
+
+**Separando por categorias de deslocamento
+**Transporte Público
+gen desloc=1 if cod_meio==1
+replace desloc=1 if cod_meio==3
+replace desloc=1 if cod_meio==9
+replace desloc=1 if cod_meio==11
+replace desloc=1 if cod_meio==10
+replace desloc=1 if cod_meio==2
+**A pé e bicicleta
+replace desloc=2 if cod_meio==13
+replace desloc=2 if cod_meio==14
+**Automóveis e Motocicletas
+replace desloc=3 if cod_meio==6
+replace desloc=3 if cod_meio==12
+replace desloc=3 if cod_meio==7
+replace desloc=3 if cod_meio==8
+**Outros
+replace desloc=4 if cod_meio==4
+replace desloc=4 if cod_meio==5
+
+**Gerando dummies
+gen bus=0
+replace bus=1 if desloc==1
+gen auto=0
+replace auto=1 if desloc==3
+gen ape=0
+replace ape=1 if desloc==2
+gen zonadif=0
+replace zonadif=1 if zona_origem!= zona_destino
+gen mundif=0
+replace mundif=1 if municipio_origem!= municpiodedestino
+gen rmc=0
+replace rmc=1 if municipio_origem!="CURITIBA"
+
+gen rendaz=1
+replace rendaz=0 if renda2==0
+replace rendaz=0 if renda2==.
+tab rendaz
+keep if rendaz==1
+
+reg tempo renda2 auto ape zonadif mundif
+vif
+reg tempo renda2 auto ape zonadif mundif
+predict residuozzz, r
+predict y_est, xb
+gen residuozzz2 = residuozzz^2
+twoway (scatter residuozzz2 y_est) 
+
+
+reg tempo renda2 auto ape zonadif mundif
+vif
+
+reg tempo renda2 auto ape zonadif mundif
+estat hettest
+
+reg tempo renda2 auto ape zonadif mundif
+whitetst
+
+
+
+reg tempo renda2 auto bus zonadif mundif
+vif
+
+reg tempo renda2 auto bus zonadif mundif
+estat hettest
+
+reg tempo renda2 auto bus zonadif mundif
+whitetst
+
+
+reg tempo renda2 ape bus zonadif mundif
+vif
+
+reg tempo renda2 ape bus zonadif mundif
+estat hettest
+
+reg tempo renda2 ape bus zonadif mundif
+whitetst

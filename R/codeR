@@ -1,0 +1,45 @@
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 6] <- 3
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 7] <- 3
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 8] <- 3
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 12] <- 3
+
+#Others
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 0] <- 4
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 4] <- 4
+deslocamento_arq$DESLOC[deslocamento_arq$COD_MEIO == 5] <- 4
+
+#Generating dummies
+deslocamento_arq["BUS"] <- 0
+deslocamento_arq$BUS[deslocamento_arq$DESLOC == 1] <- 1
+
+deslocamento_arq["AUTO"] <- 0
+deslocamento_arq$AUTO[deslocamento_arq$DESLOC == 3] <- 1
+
+deslocamento_arq["APE"] <- 0
+deslocamento_arq$APE[deslocamento_arq$DESLOC == 2] <- 1
+
+deslocamento_arq["ZONADIF"] <- 0
+deslocamento_arq$ZONADIF[deslocamento_arq$ZONA_ORIGEM != deslocamento_arq$ZONA_DESTINO] <- 1
+
+deslocamento_arq["MUNDIF"] <- 0
+deslocamento_arq$MUNDIF[deslocamento_arq$MUNICIPIO_ORIGEM != deslocamento_arq$MUNICPIODEDESTINO] <- 1
+
+deslocamento_arq["RMC"] <- 0
+deslocamento_arq$RMC[deslocamento_arq$MUNICIPIO_ORIGEM != 'CURITIBA'] <- 1
+
+deslocamento_arq["RENDAZ"] <- 1
+deslocamento_arq$RENDAZ[deslocamento_arq$RENDA2 == 0] <- 0
+deslocamento_arq$RENDAZ[which(is.na(deslocamento_arq$RENDA2))] <- 0
+
+view(deslocamento_arq$RENDAZ)
+
+desloc_arq <- subset(deslocamento_arq, RENDAZ == 1)
+
+modelo = lm(data = desloc_arq, TEMPO~RENDA2+AUTO+APE+ZONADIF+MUNDIF)
+summary(modelo)
+
+modelo1 = lm(data = desloc_arq, TEMPO~RENDA2+AUTO+BUS+ZONADIF+MUNDIF)
+summary(modelo1)
+
+modelo2 = lm(data = desloc_arq, TEMPO~RENDA2+APE+BUS+ZONADIF+MUNDIF)
+summary(modelo2)

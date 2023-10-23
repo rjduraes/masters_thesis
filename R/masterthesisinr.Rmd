@@ -1,0 +1,70 @@
+---
+
+title: "Master Theses in R"
+author: "Rafael Jose Duraes Dos Santos"
+
+date: "2023-10-20"
+
+output: html_document
+
+---
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Setting up my environment
+Notes: Setting up my environment by loading the 'googlesheets4', 'pak' and 'installr' packages.
+
+
+
+```{r install packages}
+
+install.packages("googlesheets4")
+
+install.packages("pak")
+
+install.packages("googledrive")
+
+install.packages("installr")
+
+
+```
+
+
+
+## Loading Packages
+
+
+```{r loading packages}
+
+library(googlesheets4)
+
+library(pak)
+
+library(googledrive)
+
+library(installr)
+
+
+```
+
+
+
+
+## Import data about Origin-Destination Research
+
+Note: 
+
+```{r}
+
+url_planilha <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vQO6mac4QAjEzseReJJJt5sd3cglsf8ryRcujJgnsK0we4MFxNAvc9eqR9sIM7QxQoqfIENFZujR20T/pub?output=xlsx"
+
+sheet_properties(url_planilha)
+
+planilha <- read_sheet(url_planilha)
+
+
+```
+
